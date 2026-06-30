@@ -1484,6 +1484,9 @@ body.dark-theme .settings-btn-solid {
 }
 
 @media (max-width: 1200px) {
+  body {
+    flex-direction: column !important;
+  }
   .sidebar {
     width: 100% !important;
     height: auto !important;
