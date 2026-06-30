@@ -21,10 +21,12 @@ app.use('/api/user', require('./routes/userRoutes'));
 app.use('/api/trades', require('./routes/tradeRoutes'));
 app.use('/api/exness', require('./routes/exnessRoutes'));
 
+
 // Root route
 app.get('/', (req, res) => {
   res.send('Nextun API is running...');
 });
+
 
 const PORT = process.env.PORT || 5000;
 

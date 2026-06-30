@@ -135,6 +135,40 @@ def main():
                     mt5.order_send(close_request)
         print(json.dumps({"success": True, "message": "Dummy orders executed and closed!"}))
 
+    elif action == "fetch_candles":
+        if len(sys.argv) < 7:
+            print(json.dumps({"success": False, "message": "Missing arguments for fetch_candles. Required: symbol, timeframe"}))
+        else:
+            symbol = sys.argv[5]
+            timeframe_str = sys.argv[6]
+            
+            # Map timeframe string to MT5 timeframe
+            tf_map = {
+                "M1": mt5.TIMEFRAME_M1, "M5": mt5.TIMEFRAME_M5, "M15": mt5.TIMEFRAME_M15, 
+                "M30": mt5.TIMEFRAME_M30, "H1": mt5.TIMEFRAME_H1, "H4": mt5.TIMEFRAME_H4, "D1": mt5.TIMEFRAME_D1
+            }
+            timeframe = tf_map.get(timeframe_str, mt5.TIMEFRAME_M5)
+            
+            # Request symbol to be active in market watch
+            mt5.symbol_select(symbol, True)
+            
+            rates = mt5.copy_rates_from_pos(symbol, timeframe, 0, 100)
+            if rates is None:
+                print(json.dumps({"success": False, "message": f"Failed to fetch rates for {symbol}", "error": mt5.last_error()}))
+            else:
+                # Convert rates to list of dicts
+                candles = []
+                for rate in rates:
+                    candles.append({
+                        "time": rate[0],
+                        "open": rate[1],
+                        "high": rate[2],
+                        "low": rate[3],
+                        "close": rate[4],
+                        "tick_volume": rate[5]
+                    })
+                print(json.dumps({"success": True, "data": candles}))
+
     else:
         print(json.dumps({"success": False, "message": "Unknown action"}))
 
